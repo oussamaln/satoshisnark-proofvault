@@ -1,0 +1,31 @@
+{
+  "proofs": [
+    {
+      "success": true,
+      "proofId": "SSNARK-C8529AE2",
+      "agent_name": "Th3ros-Agent",
+      "memory_type": "memory_checkpoint",
+      "sha256": "55e0948471249e063d9068dac07a136a1c0c224dfdf432fe6c21d1d92b4a34c8",
+      "fileId": "51be590b-f3e3-4fdc-a31a-0fbecdc558b2",
+      "dacsId": "QmMockDacsCID51be590b",
+      "txHash": "0xMockTxHash51be590b",
+      "storedAt": "2026-05-09T17:41:37.020Z",
+      "verificationStatus": "COMPLETED",
+      "network": "Xenea Ubusuna Testnet",
+      "localFile": "proof-1778348497022.json"
+    },
+    {
+      "success": true,
+      "proofId": "SSNARK-1D4D992B",
+      "agent_name": "Th3ros-Agent",
+      "memory_type": "execution_log",
+      "sha256": "35885a46beffc31ae79f64bae16ba79e92ce539469b041e43d90681d09443bd0",
+      "fileId": "e1d42465-86e0-40cd-841a-ee75fcc3927d",
+      "dacsId": "QmMockDacsCIDe1d42465",
+      "txHash": "0xMockTxHashe1d42465",
+      "storedAt": "2026-05-05T22:12:49.814Z",
+      "verificationStatus": "COMPLETED",
+      "network": "Xenea Ubusuna Testnet"
+    }
+  ]
+}

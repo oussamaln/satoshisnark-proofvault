@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SatoshiSnark ProofVault</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#060b16;
+  color:white;
+  font-family:Arial,sans-serif;
+  line-height:1.6;
+}
+
+.container{
+  width:90%;
+  max-width:1200px;
+  margin:auto;
+}
+
+nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:25px 0;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:bold;
+  color:#22c55e;
+}
+
+nav a{
+  color:white;
+  text-decoration:none;
+  margin-left:20px;
+}
+
+.hero{
+  padding:100px 0;
+  text-align:center;
+}
+
+.hero h1{
+  font-size:60px;
+  line-height:1.1;
+  margin-bottom:25px;
+}
+
+.hero p{
+  max-width:750px;
+  margin:auto;
+  color:#9ca3af;
+  font-size:20px;
+}
+
+.hero-buttons{
+  margin-top:40px;
+}
+
+.btn{
+  display:inline-block;
+  padding:14px 24px;
+  border-radius:10px;
+  text-decoration:none;
+  margin:10px;
+  font-weight:bold;
+}
+
+.btn-primary{
+  background:#22c55e;
+  color:black;
+}
+
+.btn-secondary{
+  border:1px solid #22c55e;
+  color:#22c55e;
+}
+
+.section{
+  padding:80px 0;
+}
+
+.section-title{
+  font-size:38px;
+  margin-bottom:20px;
+  text-align:center;
+}
+
+.section-sub{
+  text-align:center;
+  color:#9ca3af;
+  max-width:800px;
+  margin:auto;
+  margin-bottom:50px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+}
+
+.card{
+  background:#111827;
+  border:1px solid #1f2937;
+  padding:30px;
+  border-radius:16px;
+}
+
+.card h3{
+  margin-bottom:15px;
+  color:#22c55e;
+}
+
+.code-block{
+  background:#0f172a;
+  border:1px solid #1e293b;
+  padding:25px;
+  border-radius:12px;
+  overflow:auto;
+  margin-top:30px;
+}
+
+.footer{
+  padding:50px 0;
+  text-align:center;
+  color:#6b7280;
+  border-top:1px solid #1f2937;
+  margin-top:80px;
+}
+
+.highlight{
+  color:#22c55e;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<nav>
+  <div class="logo">SatoshiSnark</div>
+
+  <div>
+    <a href="/dashboard">Dashboard</a>
+  </div>
+</nav>
+
+<section class="hero">
+
+  <h1>
+    Verifiable AI Memory Infrastructure
+  </h1>
+
+  <p>
+    SatoshiSnark ProofVault provides cryptographically verifiable
+    AI execution and memory receipts with future decentralized
+    persistence through Xenea DACS integration.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="/dashboard" class="btn btn-primary">
+      Open Dashboard
+    </a>
+
+    <a href="#api" class="btn btn-secondary">
+      View API
+    </a>
+  </div>
+
+</section>
+
+<section class="section">
+
+  <h2 class="section-title">
+    Live System Status
+  </h2>
+
+  <p class="section-sub">
+    Operational overview of the ProofVault infrastructure layer.
+  </p>
+
+  <div class="grid">
+
+    <div class="card">
+      <h3>API Status</h3>
+      <p id="api-status">Loading...</p>
+    </div>
+
+    <div class="card">
+      <h3>Verification Engine</h3>
+      <p id="verify-status">Loading...</p>
+    </div>
+
+    <div class="card">
+      <h3>Storage Mode</h3>
+      <p id="storage-status">Loading...</p>
+    </div>
+
+    <div class="card">
+      <h3>Total Proofs</h3>
+      <p id="proof-count">Loading...</p>
+    </div>
+
+  </div>
+
+</section>
+
+  <div class="grid">
+
+    <div class="card">
+      <h3>Memory Notarization</h3>
+      <p>
+        Convert AI execution outputs into cryptographically
+        hashed proof receipts.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Integrity Verification</h3>
+      <p>
+        Detect tampering using deterministic SHA256
+        verification pipelines.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>DACS Integration</h3>
+      <p>
+        Future-ready decentralized persistence layer
+        for verifiable AI data infrastructure.
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>Audit Trails</h3>
+      <p>
+        Persistent AI memory receipts with proof IDs,
+        transaction references, and timestamps.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="section" id="api">
+
+  <h2 class="section-title">
+    API Endpoints
+  </h2>
+
+  <p class="section-sub">
+    Simple REST infrastructure for AI proof notarization
+    and integrity validation.
+  </p>
+
+  <div class="code-block">
+
+<pre>
+POST /api/notarize-memory
+
+GET  /api/proofs
+
+GET  /api/verify/:proofId
+
+GET  /api/health
+</pre>
+
+  </div>
+
+</section>
+
+<section class="section">
+
+  <h2 class="section-title">
+    Architecture
+  </h2>
+
+  <p class="section-sub">
+    AI Memory → Hash Generation → Proof Storage →
+    Integrity Verification → Future DACS Persistence
+  </p>
+
+</section>
+
+<div class="footer">
+  SatoshiSnark ProofVault · Built for verifiable AI infrastructure on <span class="highlight">Xenea Ubusuna</span>
+</div>
+
+</div>
+<script>
+
+async function loadSystemStatus(){
+
+  try{
+
+    const healthResponse = await fetch('/api/health');
+    const health = await healthResponse.json();
+
+    const proofsResponse = await fetch('/api/proofs');
+    const proofs = await proofsResponse.json();
+
+    document.getElementById('api-status').innerHTML =
+      'ONLINE';
+
+    document.getElementById('verify-status').innerHTML =
+      'ACTIVE';
+
+    document.getElementById('storage-status').innerHTML =
+      health.status === 'mock-ok'
+        ? 'MOCK DACS'
+        : 'LIVE DACS';
+
+    document.getElementById('proof-count').innerHTML =
+      proofs.length;
+
+  } catch(err){
+
+    document.getElementById('api-status').innerHTML =
+      'OFFLINE';
+
+    console.error(err);
+  }
+}
+
+loadSystemStatus();
+
+</script>
+</body>
+</html>

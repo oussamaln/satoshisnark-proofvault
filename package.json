@@ -1,0 +1,29 @@
+{
+  "name": "satoshisnark-proofvault",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+  "start": "node src/server.js",
+  "dev": "nodemon --ignore src/db/database.json src/server.js"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@xenea.io/dacs-sdk": "^1.0.2",
+    "axios": "^1.16.0",
+    "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "lowdb": "^7.0.1",
+    "morgan": "^1.10.1",
+    "multer": "^2.1.1",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
