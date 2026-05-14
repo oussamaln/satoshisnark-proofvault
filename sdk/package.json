@@ -1,0 +1,16 @@
+{
+  "name": "@satoshisnark/proofvault-sdk",
+  "version": "0.1.0",
+  "description": "Verifiable AI memory infrastructure SDK for ProofVault",
+  "main": "index.js",
+  "keywords": [
+    "ai",
+    "xenea",
+    "ubusuna",
+    "proofvault",
+    "verifiable-ai",
+    "decentralized-storage"
+  ],
+  "author": "Oussama Lannabi",
+  "license": "MIT"
+}

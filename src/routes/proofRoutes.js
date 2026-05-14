@@ -2,11 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const {
-  createProof,
-  getAllProofs,
-  verifyProof
-} = require("../services/proofService");
+const sdk = require("../../sdk");
 
 const {
   healthCheck
@@ -23,16 +19,17 @@ router.post("/notarize-memory", async (req, res) => {
     } = req.body;
 
     if (!agent_name || !memory_type || !content) {
+
       return res.status(400).json({
         error: "Missing required fields"
       });
     }
 
-    const proof = await createProof(
+    const proof = await sdk.notarize({
       agent_name,
       memory_type,
       content
-    );
+    });
 
     res.json(proof);
 
@@ -47,21 +44,29 @@ router.post("/notarize-memory", async (req, res) => {
 });
 
 router.get("/proofs", (req, res) => {
-  res.json(getAllProofs());
+
+  const proofs = sdk.getProofs();
+
+  res.json(proofs);
 });
 
 router.get("/verify/:proofId", (req, res) => {
 
-  const result = verifyProof(req.params.proofId);
+  const result =
+    sdk.verify(req.params.proofId);
 
   res.json(result);
 });
 
 router.get("/health", async (req, res) => {
 
-  const health = await healthCheck();
+  const health =
+    await healthCheck();
 
-  res.json(health);
+  res.json({
+    ...health,
+    sdkVersion: sdk.version
+  });
 });
 
 module.exports = router;
