@@ -1,117 +1,108 @@
 const fs = require("fs");
+
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
 
-const { generateSHA256 } = require("../utils/hash");
-const { uploadToDacs, getDacsStatus } = require("./dacsService");
+const crypto = require("crypto");
 
-const dbPath = path.join(__dirname, "../db/database.json");
+const sdk = require("../../sdk");
 
-const storageDir = path.join(__dirname, "../../storage/proofs");
+const proofsDir =
+  path.join(__dirname, "../../storage/proofs");
 
-function readDB() {
-  return JSON.parse(fs.readFileSync(dbPath, "utf8"));
+if(!fs.existsSync(proofsDir)){
+
+  fs.mkdirSync(proofsDir, {
+    recursive:true
+  });
 }
 
-function writeDB(data) {
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-}
+async function createProof(
+  agent_name,
+  memory_type,
+  content
+){
 
-async function createProof(agent_name, memory_type, content) {
-
-  const createdAt = new Date().toISOString();
-
-  const rawData = {
-    agent_name,
-    memory_type,
-    content,
-    createdAt
-  };
-
-  const serializedContent = JSON.stringify(rawData, null, 2);
-
-  const sha256 = generateSHA256(serializedContent);
-
-  const filename = `proof-${Date.now()}.json`;
-
-  const filePath = path.join(storageDir, filename);
-
-  fs.writeFileSync(filePath, serializedContent);
-
-  const buffer = Buffer.from(serializedContent);
-
-  const upload = await uploadToDacs(buffer, filename);
-
-  const status = await getDacsStatus(upload.fileId);
-
-  const proof = {
-    success: true,
-    proofId: "SSNARK-" + uuidv4().slice(0, 8).toUpperCase(),
-    agent_name,
-    memory_type,
-    sha256,
-    fileId: upload.fileId,
-    dacsId: status.dacsId || null,
-    txHash: status.txHash || null,
-    storedAt: createdAt,
-    verificationStatus: status.status,
-    network: "Xenea Ubusuna Testnet",
-    localFile: filename
-  };
-
-  const db = readDB();
-
-  db.proofs.unshift(proof);
-
-  writeDB(db);
+  const proof =
+    await sdk.notarize({
+      agent_name,
+      memory_type,
+      content
+    });
 
   return proof;
 }
 
-function getAllProofs() {
-  return readDB().proofs;
+function getAllProofs(){
+
+  if(!fs.existsSync(proofsDir)){
+    return [];
+  }
+
+  const files =
+    fs.readdirSync(proofsDir);
+
+  return files.map(file => {
+
+    const filePath =
+      path.join(proofsDir, file);
+
+    return JSON.parse(
+      fs.readFileSync(filePath)
+    );
+  });
 }
 
-function verifyProof(proofId) {
+function getProofById(proofId){
 
-  const db = readDB();
+  const proofs =
+    getAllProofs();
 
-  const proof = db.proofs.find(p => p.proofId === proofId);
+  return proofs.find(
+    proof => proof.proofId === proofId
+  );
+}
 
-  if (!proof) {
+function verifyProof(proofId){
+
+  const proof =
+    getProofById(proofId);
+
+  if(!proof){
+
     return {
-      success: false,
-      message: "Proof not found"
+      success:false,
+      message:"Proof not found"
     };
   }
 
-  const filePath = path.join(storageDir, proof.localFile);
+  const recalculatedHash =
+    crypto
+      .createHash("sha256")
+      .update(JSON.stringify({
+        agent_name: proof.agent_name,
+        memory_type: proof.memory_type,
+        content: proof.content
+      }))
+      .digest("hex");
 
-  if (!fs.existsSync(filePath)) {
-    return {
-      success: false,
-      message: "Stored proof file missing"
-    };
-  }
-
-  const fileContent = fs.readFileSync(filePath, "utf8");
-
-  const recalculatedHash = generateSHA256(fileContent);
-
-  const verified = recalculatedHash === proof.sha256;
+  const verified =
+    recalculatedHash === proof.sha256;
 
   return {
-    success: true,
+    success:true,
     proofId,
     verified,
     originalHash: proof.sha256,
     recalculatedHash,
-    status: verified ? "VERIFIED" : "TAMPERED"
+    status: verified
+      ? "VERIFIED"
+      : "TAMPERED"
   };
 }
 
 module.exports = {
   createProof,
   getAllProofs,
+  getProofById,
   verifyProof
 };

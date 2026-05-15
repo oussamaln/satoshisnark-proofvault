@@ -1,85 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<title>SatoshiSnark ProofVault</title>
+
+<title>SatoshiSnark Dashboard</title>
 
 <style>
 
 body{
-  background:#0b1120;
-  color:white;
-  font-family:Arial,sans-serif;
-  padding:30px;
+  background:#0b0f19;
+  color:#00ff99;
+  font-family:Arial;
+  padding:40px;
 }
 
-h1{
-  color:#22c55e;
+h1,h2{
+  color:#00ff99;
 }
 
 .stats{
   display:flex;
   gap:20px;
-  margin:20px 0;
+  margin-bottom:30px;
   flex-wrap:wrap;
 }
 
-.stat-box{
-  background:#111827;
-  border:1px solid #1f2937;
-  padding:15px;
-  border-radius:12px;
-  min-width:180px;
-}
-
-.stat-title{
-  color:#9ca3af;
-  font-size:14px;
-}
-
-.stat-value{
-  font-size:24px;
-  margin-top:8px;
-  color:#4ade80;
-}
-
 .card{
-  background:#111827;
-  border:1px solid #1f2937;
-  border-radius:12px;
+  background:#121826;
+  border:1px solid #00ff99;
   padding:20px;
-  margin-top:20px;
+  border-radius:12px;
+  min-width:200px;
 }
 
-.label{
-  color:#4ade80;
-  font-weight:bold;
+.proof{
+  background:#121826;
+  border:1px solid #1f2937;
+  padding:20px;
+  margin-bottom:20px;
+  border-radius:12px;
 }
 
-.status{
-  margin-top:15px;
-  display:inline-block;
-  background:#14532d;
-  padding:6px 12px;
+input, textarea, button{
+
+  width:100%;
+  margin-top:10px;
+  margin-bottom:15px;
+  padding:12px;
+  border:none;
   border-radius:8px;
+  background:#1f2937;
+  color:white;
+  box-sizing:border-box;
 }
 
 button{
-  margin-top:15px;
-  background:#22c55e;
-  border:none;
-  padding:10px 16px;
-  border-radius:8px;
+  background:#00ff99;
+  color:black;
+  font-weight:bold;
   cursor:pointer;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+.download-btn{
+  margin-top:10px;
+}
+
+.verified{
+  color:#00ff99;
   font-weight:bold;
 }
 
-.verify-result{
-  margin-top:10px;
-  font-weight:bold;
+.status-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  margin-bottom:40px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -92,24 +97,87 @@ Verifiable AI Memory Receipts on Xenea Ubusuna Testnet
 
 <div class="stats">
 
-  <div class="stat-box">
-    <div class="stat-title">Total Proofs</div>
-    <div class="stat-value" id="totalProofs">0</div>
+  <div class="card">
+    <h2>Total Proofs</h2>
+    <div id="totalProofs">0</div>
   </div>
 
-  <div class="stat-box">
-    <div class="stat-title">Verified Records</div>
-    <div class="stat-value" id="verifiedCount">0</div>
+  <div class="card">
+    <h2>Verified Records</h2>
+    <div id="verifiedProofs">0</div>
   </div>
 
-  <div class="stat-box">
-    <div class="stat-title">Storage Mode</div>
-    <div class="stat-value">MOCK DACS</div>
+  <div class="card">
+    <h2>Storage Mode</h2>
+    <div>MOCK DACS</div>
   </div>
 
-  <div class="stat-box">
-    <div class="stat-title">Network</div>
-    <div class="stat-value">UBUSUNA</div>
+  <div class="card">
+    <h2>Network</h2>
+    <div>UBUSUNA</div>
+  </div>
+
+</div>
+
+<div class="proof">
+
+  <h2>Create Proof</h2>
+
+  <input
+    id="agent"
+    placeholder="Agent Name"
+    value="Th3ros-Agent"
+  >
+
+  <input
+    id="memoryType"
+    placeholder="Memory Type"
+    value="execution_log"
+  >
+
+  <textarea
+    id="content"
+    rows="5"
+  >{"task":"AI verification task"}</textarea>
+
+  <button onclick="createProof()">
+    Generate Proof
+  </button>
+
+</div>
+
+<input
+  id="search"
+  placeholder="Search by Proof ID, Agent or Type..."
+  onkeyup="filterProofs()"
+>
+
+<h2>Live System Status</h2>
+
+<p>
+Operational overview of the ProofVault infrastructure layer.
+</p>
+
+<div class="status-grid">
+
+  <div class="card">
+    <h2>API Status</h2>
+    <div id="apiStatus">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h2>Verification Engine</h2>
+    <div id="verificationStatus">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h2>Storage Mode</h2>
+    <div id="storageStatus">Loading...</div>
+  </div>
+
+  <div class="card">
+    <h2>Total Proofs</h2>
+    <div id="proofCount">Loading...</div>
   </div>
 
 </div>
@@ -118,70 +186,226 @@ Verifiable AI Memory Receipts on Xenea Ubusuna Testnet
 
 <script>
 
-async function verifyProof(proofId, elementId){
-
-  const response = await fetch('/api/verify/' + proofId);
-
-  const result = await response.json();
-
-  const element = document.getElementById(elementId);
-
-  if(result.verified){
-    element.innerHTML = 'Integrity Status: VERIFIED';
-    element.style.color = '#22c55e';
-  } else {
-    element.innerHTML = 'Integrity Status: TAMPERED';
-    element.style.color = 'red';
-  }
-}
+let allProofs = [];
 
 async function loadProofs(){
 
-  const response = await fetch('/api/proofs');
+  const res =
+    await fetch('/api/proofs');
 
-  const proofs = await response.json();
+  const proofs =
+    await res.json();
 
-  document.getElementById('totalProofs').innerText = proofs.length;
-  document.getElementById('verifiedCount').innerText = proofs.length;
+  allProofs = proofs;
 
-  const container = document.getElementById('proofs');
+  document.getElementById(
+    'totalProofs'
+  ).innerText = proofs.length;
+
+  document.getElementById(
+    'verifiedProofs'
+  ).innerText = proofs.length;
+
+  renderProofs(proofs);
+}
+
+function renderProofs(proofs){
+
+  const container =
+    document.getElementById('proofs');
 
   container.innerHTML = '';
 
-  proofs.forEach((p, index) => {
+  const sorted =
+    [...proofs].reverse();
 
-    const card = document.createElement('div');
+  sorted.forEach(proof => {
 
-    card.className = 'card';
+    container.innerHTML += `
 
-    card.innerHTML = `
-      <div><span class="label">Proof ID:</span> ${p.proofId}</div>
-      <div><span class="label">Agent:</span> ${p.agent_name}</div>
-      <div><span class="label">Type:</span> ${p.memory_type}</div>
-      <div><span class="label">SHA256:</span> ${p.sha256}</div>
-      <div><span class="label">File ID:</span> ${p.fileId}</div>
-      <div><span class="label">DACS ID:</span> ${p.dacsId}</div>
-      <div><span class="label">TX Hash:</span> ${p.txHash}</div>
-      <div><span class="label">Stored:</span> ${p.storedAt}</div>
+      <div class="proof">
 
-      <div class="status">${p.verificationStatus}</div>
+        <h2>
+          ${proof.proofId}
+        </h2>
 
-      <br>
+        <p>
+          Agent: ${proof.agent_name}
+        </p>
 
-      <button onclick="verifyProof('${p.proofId}', 'verify-${index}')">
-        Verify Integrity
-      </button>
+        <p>
+          Type: ${proof.memory_type}
+        </p>
 
-      <div id="verify-${index}" class="verify-result"></div>
+        <p>
+          SHA256: ${proof.sha256}
+        </p>
+
+        <p>
+          File ID: ${proof.fileId}
+        </p>
+
+        <p>
+          DACS ID: ${proof.dacsId}
+        </p>
+
+        <p>
+          TX Hash: ${proof.txHash}
+        </p>
+
+        <p>
+          Stored: ${proof.storedAt}
+        </p>
+
+        <p class="verified">
+          ${proof.verificationStatus}
+        </p>
+
+        <button
+          class="download-btn"
+          onclick="downloadProof('${proof.proofId}')"
+        >
+          Download Receipt
+        </button>
+
+        <button
+          class="download-btn"
+          onclick="viewProof('${proof.proofId}')"
+        >
+          View Proof
+        </button>
+
+      </div>
+
     `;
-
-    container.appendChild(card);
   });
+}
+
+function filterProofs(){
+
+  const search =
+    document.getElementById('search')
+    .value
+    .toLowerCase();
+
+  const filtered =
+    allProofs.filter(proof => {
+
+      return (
+        proof.proofId.toLowerCase().includes(search)
+        ||
+        proof.agent_name.toLowerCase().includes(search)
+        ||
+        proof.memory_type.toLowerCase().includes(search)
+      );
+    });
+
+  renderProofs(filtered);
+}
+
+async function createProof(){
+
+  const agent =
+    document.getElementById('agent').value;
+
+  const memoryType =
+    document.getElementById('memoryType').value;
+
+  const content =
+    JSON.parse(
+      document.getElementById('content').value
+    );
+
+  const res =
+    await fetch('/api/notarize-memory', {
+
+      method:'POST',
+
+      headers:{
+        'Content-Type':'application/json'
+      },
+
+      body: JSON.stringify({
+        agent_name: agent,
+        memory_type: memoryType,
+        content
+      })
+    });
+
+  if(res.ok){
+
+    loadProofs();
+  }
+}
+
+function downloadProof(proofId){
+
+  const proof =
+    allProofs.find(
+      p => p.proofId === proofId
+    );
+
+  const blob =
+    new Blob(
+      [JSON.stringify(proof, null, 2)],
+      {type:'application/json'}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement('a');
+
+  a.href = url;
+
+  a.download =
+    `${proofId}.json`;
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function viewProof(proofId){
+
+  window.open(
+    `/proof/${proofId}`,
+    '_blank'
+  );
+}
+
+async function loadSystemStatus(){
+
+  const res =
+    await fetch('/api/health');
+
+  const data =
+    await res.json();
+
+  document.getElementById(
+    'apiStatus'
+  ).innerText = data.status;
+
+  document.getElementById(
+    'verificationStatus'
+  ).innerText = 'ACTIVE';
+
+  document.getElementById(
+    'storageStatus'
+  ).innerText = data.service || 'mock-dacs';
+
+  document.getElementById(
+    'proofCount'
+  ).innerText = data.sdkVersion || 'online';
 }
 
 loadProofs();
 
+loadSystemStatus();
+
 </script>
 
 </body>
+
 </html>

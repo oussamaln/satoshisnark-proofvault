@@ -17,25 +17,29 @@ async function notarize(data){
   const proofId =
     `SSNARK-${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
+  const dacsResult =
+    await mockDacsProvider.uploadProof(data);
+
   const proof = {
     success: true,
     proofId,
     ...data,
     sha256,
     storedAt: new Date().toISOString(),
-    verificationStatus: 'COMPLETED'
+    verificationStatus: 'COMPLETED',
+
+    fileId: dacsResult.fileId,
+    dacsId: dacsResult.dacsId,
+    txHash: dacsResult.txHash,
+    network: dacsResult.network
   };
 
   const localResult =
     await localProvider.saveProof(proof);
 
-  const dacsResult =
-    await mockDacsProvider.uploadProof(proof);
-
   return {
     ...proof,
-    ...localResult,
-    ...dacsResult
+    ...localResult
   };
 }
 
@@ -70,6 +74,7 @@ function verify(proofId){
     proofs.find(p => p.proofId === proofId);
 
   if(!proof){
+
     return {
       success: false,
       message: 'Proof not found'
